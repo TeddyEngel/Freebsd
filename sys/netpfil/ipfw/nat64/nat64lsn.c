@@ -1734,6 +1734,14 @@ ipfw_nat64lsn(struct ip_fw_chain *ch, struct ip_fw_args *args,
 	    (i = NAT64_LOOKUP(ch, icmd)) == NULL)
 		return (IP_FW_DENY);
 
+	/*
+	 * Verify that the instance is actually a nat64lsn instance.
+	 * This prevents type confusion when multiple NAT64 instance types
+	 * (nat64lsn, nat64clat, nat64stl) share the srvstate[] array.
+	 */
+	if (i->no.etlv != IPFW_TLV_NAT64LSN_NAME)
+		return (IP_FW_DENY);
+
 	*done = 1;	/* terminate the search */
 
 	switch (args->f_id.addr_type) {
